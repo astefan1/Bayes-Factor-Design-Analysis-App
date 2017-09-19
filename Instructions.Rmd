@@ -1,0 +1,97 @@
+---
+title: "Instructions"
+output: html_document
+---
+
+### What is a Bayes Factor Design Analysis?
+
+Well-designed experimental setups maximize efficiency and informativeness of the experiment. This means that they yield conclusive evidence while being efficient in terms of sample size.
+
+In a classical frequentist design, these goals are usually targeted with an a-priori power analysis by controlling long-term error rates and determining the minimum sample size for these error rates. However, this method cannot be applied to Bayesian analyses and falls short in measuring the actual evidential strength that can be expected from a design.
+
+The Bayes Factor Design Analysis (BFDA) was developed by [Schönbrodt and Wagenmakers](http://bit.ly/2uZ2R35) to tackle these shortfalls. It aims at answering the following two questions:
+
+1) Which evidence strength can I expect for a specific research design?
+2) Which long-term rates of misleading evidence can I expect for a specific research design?
+
+In a Bayesian framework, these questions can be answered using Monte-Carlo simulations, i.e. assume a population with certain properties, repeatedly (in our case 10,000 times) draw random samples from this population, and compute the analysis for each of the samples. The Bayes factor serves as a measure of evidence strength (you can find a short non-mathematical explanation of the interpretation of Bayes factors <a href="http://www.nicebread.de/what-does-a-bayes-factor-feel-like/" target="_blank">here</a>).
+
+As evidence is measured on a continuous scale, evidence thresholds (boundaries) have to be introduced if a binary decision analogous to null hypothesis significance testing should be made. If a Bayes factor is larger than the upper boundary (e.g., larger than 10), it is regarded as compelling evidence for the alternative hypothesis; if a Bayes factor is smaller than the lower boundary (e.g., smaller than 1/10), it is regardedd as compelling evidence for the null hypothesis. Misleading evidence is defined as obtaining a Bayes factor which exceeds the wrong boundary, i.e. is smaller than the lower boundary when H1 is correct or larger than the upper boundary when H0 is correct. The second question can therefore be be reframed as: How often do I obtain BF which exceeds the wrong boundary?
+
+This app is designed to facilitate a Bayes Factor Design Analysis for a simple, but very common case: An independent-group t-test with directional hypotheses.
+
+### BFDA with Informed and Default Priors
+
+Bayes factors are the ratio of two marginal likelihoods. You can imagine a marginal likelihood as a weighted sum of probability densities that you obtain for your data under the assumption of different population parameters. The weighting is determined by the prior distributions of parameters.
+
+How do you determine prior distributions? Ask yourself the following question: Which parameter values would I expect if the respective hypothesis is true <i> before </i> conducting the study? For the null hypothesis, there is not much discussion about this issue. Null hypothesis means null effect, so you assign all prior mass to zero (resulting in a point prior on zero).
+
+For the alternative hypothesis, matters become a little more difficult. There is an ongoing debate about how much information should be incorporated in this prior. So-called "objective" Bayesians prefer to incorporate as little information as possible in the prior, which results in the use of very broad prior distributions. A typical prior distribution objective Bayesians use for Bayesian t-tests is a zero-centered Cauchy distribution with a scale of $\sqrt{2}/2$. In contrast, so-called "subjective" Bayesians prefer to incorporate as much prior knowledge as possible in prior distributions. This can mean including knowledge from previous studies or knowledge about restricting conditions of the experimental setup ("I use a 5-point Likert scale therefore the maximum difference between two results cannot exceed 4"). For a more detailed account of the debate between objective and subjective Bayesians, see Dienes (2008).
+
+In this app, users can choose between two different prior distributions. We will refer to them as the "default" prior and the "informed" prior. As suggested by the name, the "informed" prior follows the subjective Bayesian approach, while the "default" prior is a non-informative prior following the objective Bayesian approach. It is called "default", because it corresponds to the default settings in the influential <a href="https://cran.r-project.org/web/packages/BayesFactor/index.html" target="_blank"><i> BayesFactor </i> R-package.</a> The subjective prior used in this app is a generic subjective prior developed by <a href="https://arxiv.org/pdf/1704.02479.pdf" target="_blank">Gronau, Ly, and Wagenmakers (2017)</a> for the context of (social) psychology using a prior elicitation technique.
+
+### Conducting a Fixed-N Design BFDA
+
+The type of Bayes Factor Design Analysis resembling closest to the typical freqentist power analysis is a fixed-n design BFDA. Here, the sample size is determined before the experiment takes place. Questions you can ask in this kind of design analysis include:
+
+1) Given a specific sample size and an expected population effect size: What Bayes factors can I expect?
+2) What sample size do I need to have to obtain a certain evidence strength with a certain (minimum) probability?
+
+The part of this app covering the BFDA for the fixed-n design is built along these two questions. To answer the first question, it provides you with distributions of Bayes factors for sample sizes from 10 to 200 and true population effect sizes ranging from $\delta$ = 0.2 to $\delta$ = 1.2. You can either access the full distribution or certain characteristics of it (median, characteristic quantiles). You can also get information about the expected rates of false positive and false negative evidence for a certain sample size, (symmetric) boundary, and true population effect. To answer the second question, we provide you with a verbal output which gives you information about the minimum sample size you need per group to obtain a certain evidence strength with a certain probability. We define evidence strength (E) as a Bayes factor which is higher or equal than E or lower or equal than 1/E.
+
+### Conducting a Sequential Design BFDA
+
+In a Bayesian setup, it is possible to use designs with optional stopping without tampering the the rates of misleading evidence. These Bayesian designs are called "Sequential Designs" (<a href="http://bit.ly/2woOAdK" target="_blank">Schönbrodt, Wagenmakers, Zehetleitner, & Perugini, 2015</a>). The idea is to collect data until a certain upper or lower boundary of Bayes factors is reached. Questions you can ask in a design analysis for this kind of design include:
+
+1) What sample sizes can I expect given a desired level of evidence and the expected effect size?
+2) What is the probability of misleading evidence for certain boundaries?
+
+We answer both questions in the Sequential Design part of the app. First, we give a graphical summary of the sample size distributions for symmetric boundaries from 3 to 30 (equivalent to lower boundaries from 1/3 to 1/30 and upper boundaries from 3 to 30). Like in a boxplot, we use medians as a statistic for the central tendency of the distribution, and the user can choose to fade-in hinges and whiskers of the distribution. When users have gained a broad understanding of the relation between sample size and choice of boundary, they can proceed with the detailed analyses in the bottom part of the tab. Here, they can access the exact values of distinct features of the distribution (median, characteristic quantiles, hinges, whiskers) as well as another graphic overview of the design features.
+
+Also the second question of the BFDA sequential designs is answered in this panel. Users can access information on the expected rates of misleading evidence for boundaries ranging from 3 to 30.
+
+### Details of the App
+The app facilitates a BFDA for an independent-group t-test with directional hypotheses. It relies on the results of Monte Carlo simulations with 10,000 iterations. We computed Bayes factors based on a t-statistic. The t-statistic was obtained using the t.test function from the <i>stats</i> package in R. The default Bayes factor was computed using the ttest.tstat function of the R <i>BayesFactor</i> package. The null interval was set to [0;Inf] and the r scale to "medium". The informed Bayes factors were computed using the functions created by <a href="https://arxiv.org/pdf/1704.02479.pdf" target="_blank">Gronau, Ly, and Wagenmakers (2017)</a>. The informed prior was set to a t-distribution with a non-centrality parameter of 0.35, 3 degrees of freedom, and a scale parameter of 0.102.
+
+```{r, echo=FALSE, fig.width = 10}
+
+library(LaplacesDemon)
+dtss <- function(delta, mu.delta, r, kappa, log = FALSE) {
+  
+  out <- - log(r) + lgamma((kappa + 1)/2) - .5*(log(pi) + log(kappa)) - 
+    lgamma(kappa/2) - (kappa + 1)/2 * log(1 + ((delta - mu.delta)/r)^2/kappa)
+  
+  if ( ! log)
+    out <- exp(out)
+  
+  return(out)
+  
+}
+
+x <- seq(0, 4, by = 0.01)
+yt <- dtss(x, mu.delta = 0.35, r = 0.102, kappa = 3)
+ycauchy <- dcauchy(x, location = 0, scale = sqrt(2)/2)
+
+par(cex.main = 1.5, mar = c(5, 6, 4, 5) + 0.1, mgp = c(3.5, 1, 0), cex.lab = 1.5, 
+    font.lab = 2, cex.axis = 1.3, bty = "n", las = 1)
+plot(x, yt, type = "l", ylim = c(0, 3.5), lwd = 2, lty = "dotted", xlab = "",
+     ylab = "", xaxt = "n", yaxt = "n")
+par(new = TRUE)
+plot(x, ycauchy, type = "l", ylim = c(0, 3.5), lwd = 2, lty = 1, xlab = "",
+     ylab = "", xaxt = "n", yaxt = "n")
+
+axis(1, at = c(0, 1, 2, 3, 4, 5))
+arrows(x0 = 0, y0 = 0, x1 = 0, y1 = 4, lwd = 2, xpd = TRUE)
+mtext("Density", 2, line = 1.5, cex = 1.5, font = 2, las = 0)
+mtext(expression(delta), 1, line = 3, cex = 2, font = 2)
+title("Prior Distributions on Effect Size")
+legend(x = 4, y = 3.5,
+       legend = c(expression("t-Distribution (" * mu * "= 0.35, df = 3, r = 0.102) "),
+                  expression("Cauchy-Distribution (" * mu * "= 0, r = " * sqrt(2) * "/ 2)")),
+       xjust = 1, yjust = 1, lty = c("solid", "dotted"), bty = "n",
+       pt.cex = 3, cex = 1.2)
+
+```
+
+### References
+...

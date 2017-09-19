@@ -1,0 +1,149 @@
+---
+title: "Bayes Factor Design Analysis: Dynamic Report for Fixed-N Design"
+output: pdf_document
+classoption: a3paper
+fontsize: 12pt
+params:
+  method.fixed: NA
+  choiceBFdetails.fixed: NA
+  true.ES.fixed: NA
+  samplesize.fixed: NA
+  decisionboundary.fixed: NA
+  res: NA
+  fixed.sim: NA
+  analysis.expBF.list: NA
+  analysis.expBF: NA
+  probability.fixed: NA
+  evidencestrength.fixed: NA
+  samplesizeH0.fixed: NA
+  NforBF.H0: NA
+  NforBF.H1: NA
+---
+
+This is a dynamic report of your Bayes Factor Design Analysis for the fixed-N design. The analysis was conducted on `r I(print(as.character(Sys.time())))`.
+
+# Selected parameters
+
+**Samplesize:** `r params$samplesize.fixed`
+
+**Data Generating Process:** ES = `r params$true.ES.fixed`
+
+**Decision Boundaries:**
+
+* Lower Boundary: `r 1/params$decisionboundary.fixed`
+* Upper Boundary: `r params$decisionboundary.fixed`
+
+**Prior on Effect Size:**
+
+* Default Prior: Cauchy($\mu$ = 0, $r$ = $\sqrt{2}/2$)
+* Informed Prior: t($\mu$ = 0.35, $r$ = 0.102, $df$ = 3)
+
+# Analyses
+
+`r if(length(params$choiceBFdetails.fixed) != 0) {"## Part 1: What Bayes factors can I expect?"}`
+
+```{r fig.width=10, fig.height=5, echo=FALSE }
+
+if ("BFdist" %in% params$choiceBFdetails.fixed){
+  combine.plot.exp.BF.dist(method = params$method.fixed,
+                                       res.H1 = params$fixed.sim[[params$res]],
+                                       res.H0 = params$fixed.sim[["res.0"]],
+                                       true.ES.H1 = params$true.ES.fixed,
+                                       samplesize = params$samplesize.fixed,
+                                       boundary = c(1/params$decisionboundary.fixed, params$decisionboundary.fixed))
+  }
+```
+
+```{r echo=FALSE}
+library(knitr)
+
+
+# ---------------------------------------------------- Median Tables ---------------------------------------------------------------
+
+if("MedBF" %in% params$choiceBFdetails.fixed){
+    
+    medBF.1.table.default <- params$analysis.expBF.list[[params$analysis.expBF]]$df.default %>% filter(n == params$samplesize.fixed) %>% select(quant.50) %>% exp(.)
+    medBF.0.table.default <- params$analysis.expBF.list[["analysis.expBF.0"]]$df.default %>% filter(n == params$samplesize.fixed) %>% select(quant.50) %>% exp(.)
+    medBF.table.default <- cbind(medBF.1.table.default, medBF.0.table.default)
+    
+    if("Default" %in% params$method.fixed){
+      return(kable(medBF.table.default, col.names = c("Median Bayes Factor (Default)", "Median Bayes Factor (Default, H0)"), digits = 2, caption = "Medians of the Bayes Factor Distribution for the Default Prior"))
+    }}
+
+
+if ("MedBF" %in% params$choiceBFdetails.fixed){
+    medBF.1.table.informed <- params$analysis.expBF.list[[params$analysis.expBF]]$df.informed %>% filter(n == params$samplesize.fixed) %>% select(quant.50) %>% exp(.)
+    medBF.0.table.informed <- params$analysis.expBF.list[["analysis.expBF.0"]]$df.informed %>% filter(n == params$samplesize.fixed) %>% select(quant.50) %>% exp(.)
+    medBF.table.informed <- cbind(medBF.1.table.informed, medBF.0.table.informed)
+
+    if("Informed" %in% params$method.fixed){
+      return(kable(medBF.table.informed, col.names = c("Median Bayes Factor (Informed)", "Median Bayes Factor (Informed, H0)"), digits = 2, caption = "Medians of the Bayes Factor Distribution for the Informed Prior"))
+    }}
+
+# ---------------------------------------------------- Quartile Tables -------------------------------------------------------------
+
+
+if ("BFquantiles" %in% params$choiceBFdetails.fixed){
+    
+    BF.quantiles.1.table.def <- params$analysis.expBF.list[[params$analysis.expBF]]$df.default %>% filter(n == params$samplesize.fixed) %>% select(quant.05, quant.25, quant.75, quant.95) %>% exp(.)
+    BF.quantiles.0.table.def <- params$analysis.expBF.list[["analysis.expBF.0"]]$df.default %>% filter(n == params$samplesize.fixed) %>% select(quant.05, quant.25, quant.75, quant.95) %>% exp(.)
+    BF.quantiles.table.def <- cbind(c(paste0("H1: ES = ", params$true.ES.fixed), "H0: ES = 0"),rbind(BF.quantiles.1.table.def, BF.quantiles.0.table.def))
+
+    if("Default" %in% params$method.fixed){
+      return(kable(BF.quantiles.table.def, col.names = c("DGP", "5%", "25%", "75%", "95%"), caption = "Quantiles of the Bayes Factor Distribution (Default Prior on Effect Size)", digits = 2))
+    }}
+
+if ("BFquantiles" %in% params$choiceBFdetails.fixed){
+    
+    BF.quantiles.1.table.inf <- params$analysis.expBF.list[[params$analysis.expBF]]$df.informed %>% filter(n == params$samplesize.fixed) %>% select(quant.05, quant.25, quant.75, quant.95) %>% exp(.)
+    BF.quantiles.0.table.inf <- params$analysis.expBF.list[["analysis.expBF.0"]]$df.informed %>% filter(n == params$samplesize.fixed) %>% select(quant.05, quant.25, quant.75, quant.95) %>% exp(.)
+    BF.quantiles.table.inf <- cbind(c(paste0("H1: ES = ", params$true.ES.fixed), "H0: ES = 0"),rbind(BF.quantiles.1.table.inf, BF.quantiles.0.table.inf))
+
+    if("Informed" %in% params$method.fixed){
+      return(kable(BF.quantiles.table.inf, col.names = c("DGP", "5%", "25%", "75%", "95%"), caption = "Quantiles of the Bayes Factor Distribution (Informed Prior on Effect Size)", digits = 2))
+    }}
+
+# ---------------------------------------------------- Error Rates Tables ----------------------------------------------------------
+
+
+type1error.table <- FPFN.fixed(params$fixed.sim[["res.0"]], params$method.fixed, params$decisionboundary.fixed, params$samplesize.fixed, 1)
+      type2error.table <- FPFN.fixed(params$fixed.sim[[params$res]], params$method.fixed, params$decisionboundary.fixed, params$samplesize.fixed, 2)
+      errors <- rbind(type1error.table, type2error.table)
+      rownames(errors) <- c("False Positive Evidence Rates", "False Negative Evidence Rates")
+      if(ncol(errors) == 1 & "Default" %in% params$method.fixed){colnames(errors) <- "Default Prior on ES"}
+      if(ncol(errors) == 1 & "Informed" %in% params$method.fixed){colnames(errors) <- "Informed Prior on ES"}
+    
+    if("errorrates.fixedn" %in% params$choiceBFdetails.fixed & length(params$method.fixed) != 0){  
+      return(kable(errors, row.names = TRUE, digits = 3, caption = "Rates of Misleading Evidence", col.names = colnames(errors)))}
+```
+
+\newpage
+
+## Part 2: What sample size do I need to obtain a certain strength of evidence with a certain probability?
+
+``` {r echo=FALSE}
+# ---------------------------------------------------- Part II: N for BF -----------------------------------------------------------
+
+text.default.H0 <- params$NforBF.H0[1]
+text.informed.H0 <- params$NforBF.H0[2]
+text.default.H1 <- params$NforBF.H1[1]
+text.informed.H1 <- params$NforBF.H1[2]
+
+
+    if("Default" %in% params$method.fixed & params$samplesizeH0.fixed == TRUE){
+      HTML("<p style=font-size:15px >", paste0("If H0 is true and the default prior on effect size is used for analyses, ", text.default.H0, "</p>"))
+    }
+    
+    if("Informed" %in% params$method.fixed & params$samplesizeH0.fixed == TRUE){
+      HTML("<p style=font-size:15px >", paste0("If H0 is true and the informed prior on effect size is used for analyses, ", text.informed.H0, "</p>"))
+    }
+    
+    if("Default" %in% params$method.fixed){
+      HTML("<p style=font-size:15px >", paste0("If the effect size is ", params$true.ES.fixed, " and the default prior on effect size is used for analyses, ", text.default.H1, "</p>"))
+    }
+
+    if("Informed" %in% params$method.fixed){
+      HTML("<p style=font-size:15px >", paste0("If the effect size is ", params$true.ES.fixed, " and the informed prior on effect size is used for analyses, ", text.informed.H1, "</p>"))
+    }
+
+```

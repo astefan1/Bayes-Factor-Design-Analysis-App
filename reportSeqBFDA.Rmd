@@ -1,0 +1,244 @@
+---
+title: "Bayes Factor Design Analysis: Dynamic Report for Fixed-N Design"
+output: pdf_document
+classoption: a3paper
+fontsize: 12pt
+geometry: margin=2cm
+params:
+  true.ES: NA
+  medians: NA
+  bound: NA
+  method: NA
+  SummaryPlot: NA
+  stats: NA
+  FPFN: NA
+  vioplot: NA
+  bp: NA
+  histogram: NA
+  choicenames.hinges: NA
+  choicenames.whisker: NA
+  choicevalues: NA
+  hinges: NA
+  whiskers: NA
+  efficiency: NA
+  defaultmedian: NA
+  informedmedian: NA
+  n.default.H1: NA
+  n.default.H0: NA
+  n.informed.H1: NA
+  n.informed.H0: NA
+  ndistslist: NA
+  efficiencylist: NA
+  seq.simresults: NA
+  tabdata: NA
+  tabdata.0: NA
+  BFDA.result: NA
+                     
+---
+
+This is a dynamic report of your Bayes Factor Design Analysis for the sequential design. The analysis was conducted on `r I(print(as.character(Sys.time())))`.
+
+# Selected parameters
+
+**Prior on Effect Size:**
+
+* Default Prior: Cauchy($\mu$ = 0, $r$ = $\sqrt{2}/2$)
+* Informed Prior: t($\mu$ = 0.35, $r$ = 0.102, $df$ = 3)
+
+**Data Generating Process:** ES = `r params$true.ES`
+
+**Decision Boundaries:**
+
+* Lower Boundary: `r round(1/as.numeric(params$bound), 2)`
+* Upper Boundary: `r as.numeric(params$bound)`
+
+
+```{r echo=FALSE, fig.height=5, fig.width=10}
+efficiencyplot(params$efficiencylist[[params$efficiency]],
+               params$true.ES,
+               params$defaultmedian,
+               params$informedmedian,
+               params$hinges,
+               params$whiskers
+               )
+```
+
+
+```{r echo=FALSE, fig.width=10, fig.height=10}
+
+if (length(params$SummaryPlot) > 0 & is.element("Default", params$method)){
+      summaryplot.sequentialBFDA(SequentialBF.obsub = params$seq.simresults[[params$BFDA.result]], 
+                                 boundary = as.numeric(params$bound),
+                                 method = "default")
+}
+
+if (length(params$SummaryPlot) > 0 & is.element("Informed", params$method)){
+     summaryplot.sequentialBFDA(SequentialBF.obsub = params$seq.simresults[[params$BFDA.result]],
+                                boundary = as.numeric(params$bound),
+                                method = "informed")
+}
+```
+
+```{r echo=FALSE}
+# -------------------------------------------- Median Tables -------------------------------------------------------------------
+library(knitr)
+
+if(is.element("medians", params$stats)){
+      tab <- select(params$tabdata.0, starts_with("median"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0)
+      colnames(tab) <- params$method
+      return(kable(tab, caption = "Median N if H0 is true", digits = 0))
+}
+if(is.element("medians", params$stats)){
+    tab <- select(params$tabdata, starts_with("median"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2)
+    colnames(tab) <- params$method
+    return(kable(tab, caption = "Median N if H1 is true", digits = 0, align = "l"))
+}
+
+
+# ---------------------------------------- Hinges Tables ------------------------------------------------------------------------
+
+
+if(is.element("hinges", params$stats)){
+      tab <- select(params$tabdata.0, starts_with("lowhinge"), starts_with("uphinge"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0)
+      if(ncol(tab) == 4){
+        colnames(tab) <- c("Lower Hinge Default", "Lower Hinge Informed", "Upper Hinge Default", "Upper Hinge Informed")
+      } else if (is.element("lowhinge.default", colnames(tab))){
+        colnames(tab) <- c("Lower Hinge Default", "Upper Hinge Default")
+      } else {
+        colnames(tab) <- c("Lower Hinge Informed", "Upper Hinge Informed")
+      }
+      return(kable(tab, caption = "Hinges of N if H0 is true", digits = 0, align = "l"))
+}
+
+if(is.element("hinges", params$stats)){
+      tab <- select(params$tabdata, starts_with("lowhinge"), starts_with("uphinge"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2)
+      if(ncol(tab) == 4){
+        colnames(tab) <- c("Lower Hinge Default", "Lower Hinge Informed", "Upper Hinge Default", "Upper Hinge Informed")
+      } else if (is.element("lowhinge.default", colnames(tab))){
+        colnames(tab) <- c("Lower Hinge Default", "Upper Hinge Default")
+      } else {
+        colnames(tab) <- c("Lower Hinge Informed", "Upper Hinge Informed")
+      }
+      return(kable(tab, caption = "Hinges of N if H1 is true", digits = 0, align = "l"))
+}
+
+# ----------------------------------------------- Whiskers Table ------------------------------------------------------------------
+
+if(is.element("whiskers", params$stats)){
+      tab <- select(params$tabdata.0, starts_with("lowwhisk"), starts_with("upwhisk"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0)
+      if(ncol(tab) == 4){
+        colnames(tab) <- c("Lower Whisker Default", "Lower Whisker Informed", "Upper Whisker Default", "Upper Whisker Informed")
+      } else if (is.element("lowhinge.default", colnames(tab))){
+        colnames(tab) <- c("Lower Whisker Default", "Upper Whisker Default")
+      } else {
+        colnames(tab) <- c("Lower Whisker Informed", "Upper Whisker Informed")
+      }
+      return(kable(tab, caption = "Whiskers of N if H0 is true", digits = 0, align = "l"))
+}
+
+if(is.element("whiskers", params$stats)){
+      tab <- select(params$tabdata, starts_with("lowwhisk"), starts_with("upwhisk"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2)
+      if(ncol(tab) == 4){
+        colnames(tab) <- c("Lower Whisker Default", "Lower Whisker Informed", "Upper Whisker Default", "Upper Whisker Informed")
+      } else if (is.element("lowhinge.default", colnames(tab))){
+        colnames(tab) <- c("Lower Whisker Default", "Upper Whisker Default")
+      } else {
+        colnames(tab) <- c("Lower Whisker Informed", "Upper Whisker Informed")
+      }
+      return(kable(tab, caption = "Whiskers of N if H1 is true", digits = 0, align = "l"))
+}
+
+
+# --------------------------------- Quantile Tables -------------------------------------------------------------------------------
+
+
+if(is.element("quartiles", params$stats) & is.element("Default", params$method)){
+      tab.default <- select(params$tabdata.0, starts_with("quant"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0) %>% select(ends_with("default.H0"))
+      if(ncol(tab.default) > 0){colnames(tab.default) <- c("5%", "25%", "75%", "95%")}
+      return(kable(tab.default, caption = "Relevant Quantiles of the Distribution of N (DGP: H0, Default Prior on Effect Size)", digits = 0, align = "l"))
+}
+
+if(is.element("quartiles", params$stats) & is.element("Informed", params$method)){
+      tab.informed <- select(params$tabdata.0, starts_with("quant"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0) %>% select(ends_with("informed.H0"))
+      if(ncol(tab.informed) > 0){colnames(tab.informed) <- c("5%", "25%", "75%", "95%")}
+      return(kable(tab.informed, caption = "Relevant Quantiles of the Distribution of N (DGP: H0, Informed Prior on Effect Size)", digits = 0, align = "l"))
+}
+
+if(is.element("quartiles", params$stats) & is.element("Default", params$method)){
+      tab.default <- select(params$tabdata, starts_with("quant"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2) %>% select(ends_with("default"))
+      if(ncol(tab.default) > 0){colnames(tab.default) <- c("5%", "25%", "75%", "95%")}
+      
+      return(kable(tab.default, caption = "Relevant Quantiles of the Distribution of N (DGP: H1, Default Prior on Effect Size)", digits = 0, align = "l"))
+}
+
+if(is.element("quartiles", params$stats) & is.element("Informed", params$method)){
+      tab.informed <- select(params$tabdata, starts_with("quant"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2) %>% select(ends_with("informed"))
+      if(ncol(tab.informed) > 0){colnames(tab.informed) <- c("5%", "25%", "75%", "95%")}
+
+      return(kable(tab.informed, caption = "Relevant Quantiles of the Distribution of N (DGP: H1, Informed Prior on Effect Size)", digits = 0, align = "l"))
+}
+
+# ------------------------------------------------- Error Rates ------------------------------------------------------------------
+
+if (is.element("H0", params$FPFN)){
+      errors <- select(params$tabdata.0, starts_with("upper.hit"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0)
+      if(ncol(errors) == 2){
+        colnames(errors) <- c("Default Prior on Effect Size", "Informed Prior on Effect Size")
+      } else if (is.element("lower.hit.default", colnames(errors))) {
+        colnames(errors) <- "Default Prior on Effect Size"
+      } else {
+        colnames(errors) <- "Informed Prior on Effect Size"
+      }
+      return(kable(errors, caption = "False Positive Error Rates", align = "l"))
+}
+
+if (is.element("H1", params$FPFN)){
+      errors <- select(params$tabdata, starts_with("lower.hit"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2)
+      if(ncol(errors) == 2){
+        colnames(errors) <- c("Default Prior on Effect Size", "Informed Prior on Effect Size")
+      } else if (is.element("lower.hit.default", colnames(errors))) {
+        colnames(errors) <- "Default Prior on Effect Size"
+      } else {
+        colnames(errors) <- "Informed Prior on Effect Size"
+      }
+      return(kable(errors, caption = "False Negative Error Rates", align = "l"))
+}
+
+```
+
+```{r echo=FALSE, fig.height=5, fig.width=10}
+
+if(length(params$vioplot) > 0){
+      cleanviolinplot(params$ndistslist,
+                      true.ES = params$true.ES,
+                      bound = params$bound,
+                      default = is.element("Default", params$method),
+                      informed = is.element("Informed", params$method),
+                      H0 = is.element("H0", params$vioplot),
+                      H1 = is.element("H1", params$vioplot))
+}
+
+if(length(params$bp) > 0){
+      cleanboxplot(params$ndistslist,
+                    true.ES = params$true.ES,
+                    bound = params$bound,
+                    default = is.element("Default", params$method),
+                    informed = is.element("Informed", params$method),
+                    H0 = is.element("H0", params$bp),
+                    H1 = is.element("H1", params$bp))
+}
+
+if(length(params$histogram) > 0){
+      cleanhist.combine(true.ES = params$true.ES,
+                        n.default.H1 = params$n.default.H1[,1],
+                        n.default.H0 = params$n.default.H0[,1],
+                        n.informed.H1 = params$n.informed.H1[,1],
+                        n.informed.H0 = params$n.informed.H0[,1],
+                        default = is.element("Default", params$method),
+                        informed = is.element("Informed", params$method),
+                        H0 = is.element("H0", params$histogram),
+                        H1 = is.element("H1", params$histogram)
+                        )
+}
+
+```
