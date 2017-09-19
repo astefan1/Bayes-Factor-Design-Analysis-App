@@ -27,7 +27,10 @@ load_data <- function(){
   seq.simresults <- load("seq.simresults.RData", envir = e)
   fixed.simresults <- load("fixed.simresults.RData", envir = e)
   analysis.expBF.list <-    load("analysis.expBF.list.RData",    envir = e)
-  }
+}
+
+# Load data
+load_data()
 
 defaultstring <- HTML("Default: Cauchy(0, &radic;<span style=text-decoration:overline;>&nbsp;2&nbsp;</span> / 2)")
 informedstring <- HTML("Informed: t(&mu; = 0.35, df = 3, r = 0.102)")
@@ -289,9 +292,7 @@ server <- function(input, output) {
   output$hingeswhiskers <- renderUI({
     if((input$whiskers == "default" & input$hinges == "informed") | (input$whiskers == "informed" & input$hinges == "default")){
       HTML("<p style=font-size:15px ><span style=color:red><strong>Please select the same prior distribution for hinges and whiskers!</strong></span></p>")}})
-  
-  # Load data
-  load_data()
+
   
   # Get data for specified ES
   efficiency <- reactive({paste0("efficiency.", input$true.ES)})
