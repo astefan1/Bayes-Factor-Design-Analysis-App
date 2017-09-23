@@ -60,7 +60,7 @@ FPFN.fixed <- function(sim.tomaxn, method, boundary, samplesize, errortype){
 #' @param evidencestrength An (absolute) Bayes factor as measure of evidence strength
 #' @param prob Probability with which evidence strength should be obtained (number from 0:1)
 
-NforBF <- function(sim.tomaxn, evidencestrength, prob){
+NforBF <- function(sim.tomaxn, evidencestrength, prob, H0 = FALSE){
   
   # Define objects
   logEv <- log(evidencestrength)
@@ -68,6 +68,9 @@ NforBF <- function(sim.tomaxn, evidencestrength, prob){
   sim <- as.data.frame(sim.tomaxn)
   
   # Conduct analysis
+  
+  if(H0 == FALSE){
+    
   analysis <- sim %>%
     do(data.frame(evstrength.default = abs(.$logBF.default),
                   evstrength.informed = abs(.$logBF.informed),
@@ -81,11 +84,31 @@ NforBF <- function(sim.tomaxn, evidencestrength, prob){
   nforBF.default <- analysis[which(analysis$prob.quant.default >= logEv), 1][1]
   nforBF.informed <- analysis[which(analysis$prob.quant.informed >= logEv),1][1]
   
+  } else {
+    analysis <- sim %>%
+      do(data.frame(evstrength.default = .$logBF.default,
+                    evstrength.informed = .$logBF.informed,
+                    n = .$n)) %>% 
+      group_by(n) %>% # group by 
+      do(data.frame(prob.quant.default = quantile(.$evstrength.default, probs = prob),
+                    prob.quant.informed = quantile(.$evstrength.informed, probs = prob))) %>%
+      ungroup() %>%
+      as.data.frame()
+    
+    nforBF.default <- analysis[which(analysis$prob.quant.default <= -logEv), 1][1]
+    nforBF.informed <- analysis[which(analysis$prob.quant.informed <= -logEv),1][1]
+  }
+  
+  if(H0 == FALSE){
+    bound <- "larger than "
+  } else {
+    bound <- "smaller than 1/"
+  }
+  
   verbal.default <- paste0("you will need at least <strong>",
                            nforBF.default,
-                           " observations per group </strong>to obtain a Bayes factor of at least <strong>",
-                           evidencestrength,
-                           " or 1/",
+                           " observations per group </strong>to obtain a Bayes factor <strong>",
+                           bound,
                            evidencestrength,
                            "</strong> with a probability of <strong>p = ",
                            prob,
@@ -93,24 +116,21 @@ NforBF <- function(sim.tomaxn, evidencestrength, prob){
   
   verbal.informed <- paste0("you will need at least <strong>",
                             nforBF.informed,
-                            " observations per group</strong> to obtain a Bayes factor of at least <strong>",
-                            evidencestrength,
-                            " or 1/",
+                            " observations per group</strong> to obtain a Bayes factor <strong>",
+                            bound,
                             evidencestrength,
                             "</strong> with a probability of <strong>p = ",
                             prob,
                             "<strong>.")
   
-  if(is.na(nforBF.default)){verbal.default <- paste0("you will need <strong>more than 500 observations per group</strong> to obtain a Bayes factor of at least <strong>",
-                                                     evidencestrength,
-                                                     " or 1/",
+  if(is.na(nforBF.default)){verbal.default <- paste0("you will need <strong>more than 500 observations per group</strong> to obtain a Bayes factor <strong>",
+                                                     bound,
                                                      evidencestrength,
                                                      "</strong> with a probability of <strong>p = ",
                                                      prob,
                                                      "</strong>.")}
-  if(is.na(nforBF.informed)){verbal.informed <- paste0("you will need <strong>more than 500 observations per group</strong> to obtain a Bayes factor of at least <strong>",
-                                                       evidencestrength,
-                                                       " or 1/",
+  if(is.na(nforBF.informed)){verbal.informed <- paste0("you will need <strong>more than 500 observations per group</strong> to obtain a Bayes factor <strong>",
+                                                       bound,
                                                        evidencestrength,
                                                        "</strong> with a probability of <strong>p = ",
                                                        prob,

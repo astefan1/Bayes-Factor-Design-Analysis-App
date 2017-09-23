@@ -116,14 +116,14 @@ ui <- shinyUI(
                                                        tableOutput("errorrates.fixedn.table"),
                                                        plotOutput("BFdist.plot"))
                                              )),
-                      fluidRow(h3("Part 2: What sample size do I need to obtain a certain strength of evidence with a certain probability?")),
+                      fluidRow(h3("Part 2: What sample size do I need to obtain true positive or true negative evidence with a certain probability?")),
                       
                       fluidRow(sidebarLayout(sidebarPanel(id = "sidebar",
                                                           width = 4,
                                                           HTML("<span style='font-size:20px'><p>Select Settings for Details</p></span>"),
                                                           sliderInput(inputId = "probability.fixed",
                                                                       label = "Select a Probability",
-                                                                      value = 80,
+                                                                      value = 0.8,
                                                                       min = 0.5,
                                                                       max = 0.99,
                                                                       step = 0.01,
@@ -406,8 +406,8 @@ server <- function(input, output) {
   
   # Create Text Output for Part II: N for evidence strength with certain probability
   
-  NforBF.H0 <- reactive({NforBF(e[["fixed.simresults"]][["res.0"]], input$evidencestrength.fixed, input$probability.fixed)})
-  NforBF.H1 <- reactive({NforBF(e[["fixed.simresults"]][[res()]], input$evidencestrength.fixed, input$probability.fixed)})
+  NforBF.H0 <- reactive({NforBF(e[["fixed.simresults"]][["res.0"]], input$evidencestrength.fixed, input$probability.fixed, H0 = TRUE)})
+  NforBF.H1 <- reactive({NforBF(e[["fixed.simresults"]][[res()]], input$evidencestrength.fixed, input$probability.fixed, H0 = FALSE)})
   
   output$samplesizeH0.default.text <- renderUI({
 
