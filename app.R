@@ -186,9 +186,9 @@ ui <- shinyUI(
                                      choiceValues = c("Default", "Informed"),
                                      selected = c("Default", "Informed")
                                     ),
-                  uiOutput("hingesreactive"),
-                  uiOutput("whiskersreactive"),
-                  htmlOutput("hingeswhiskers"),
+                  uiOutput("quartilesreactive"),
+                  uiOutput("cisreactive"),
+                  htmlOutput("quartilescis"),
                   HTML("<p><p><a href=efficiencyplot.explanation.jpeg/ target=_blank > Click here to see an explanation of the plot on the right</a></p>")
                   ),
            mainPanel(
@@ -262,30 +262,30 @@ ui <- shinyUI(
 # Define server logic 
 server <- function(input, output) {
   
-# ---- Create UI Choice Options for Hinges / Whiskers in Sequential Design -----
+# ---- Create UI Choice Options for Quartiles / Confidence Intervals in Sequential Design -----
   
-  choicenames.hinges <- reactive(methodselection(input$medians)[[1]])
-  choicenames.whisker <- reactive(methodselection(input$medians)[[2]])
+  choicenames.Nquartiles <- reactive(methodselection(input$medians)[[1]])
+  choicenames.NCIs <- reactive(methodselection(input$medians)[[2]])
   choicevalues <- reactive(methodselection(input$medians)[[3]])
   
-  output$hingesreactive <- renderUI({
-    radioButtons(inputId = "hinges",
-                 label = "Upper and lower hinge of N",
-                 choiceNames = choicenames.hinges(),
+  output$quartilesreactive <- renderUI({
+    radioButtons(inputId = "Nquartiles",
+                 label = "25% to 75% Quantile Range",
+                 choiceNames = choicenames.Nquartiles(),
                  choiceValues = choicevalues())
   })
   
-  output$whiskersreactive <- renderUI({
-    radioButtons(inputId = "whiskers",
-                 label = "Upper and lower whiskers of N",
-                 choiceNames = choicenames.whisker(),
+  output$cisreactive <- renderUI({
+    radioButtons(inputId = "NCIs",
+                 label = "5% to 95% Quantile Range",
+                 choiceNames = choicenames.NCIs(),
                  choiceValues = choicevalues())
     
   })
   
-  output$hingeswhiskers <- renderUI({
-    if((input$whiskers == "default" & input$hinges == "informed") | (input$whiskers == "informed" & input$hinges == "default")){
-      HTML("<p style=font-size:15px ><span style=color:red><strong>Please select the same prior distribution for hinges and whiskers!</strong></span></p>")}})
+  output$quartilescis <- renderUI({
+    if((input$NCIs == "default" & input$Nquartiles == "informed") | (input$NCIs == "informed" & input$Nquartiles == "default")){
+      HTML("<p style=font-size:15px ><span style=color:red><strong>Please select the same prior distribution for both quantile ranges!</strong></span></p>")}})
 
   
   # Get data for specified ES
@@ -483,8 +483,8 @@ server <- function(input, output) {
                                                            input$true.ES,
                                                            defaultmedian(),
                                                            informedmedian(),
-                                                           input$hinges,
-                                                           input$whiskers)})
+                                                           input$Nquartiles,
+                                                           input$NCIs)})
   
   
   
@@ -555,23 +555,17 @@ server <- function(input, output) {
   
   output$mediantable <- renderTable({
     if(is.element("medians", input$stats)){
-    tab <- select(tabdata(), starts_with("median"), boundary2) %>% filter(boundary2 == input$bound) %>% select(-boundary2)
-    colnames(tab) <- input$method
+    tab1 <- select(tabdata(), starts_with("median"), boundary2) %>% filter(boundary2 == input$bound) %>% select(-boundary2)
+    colnames(tab1) <- input$method
+    tab0 <- select(tabdata.0(), starts_with("median"), boundary2.H0) %>% filter(boundary2.H0 == input$bound) %>% select(-boundary2.H0)
+    colnames(tab0) <- input$method
+    tab <- rbind(tab1, tab0)
+    rownames(tab) <- c("DGP: H1", "DGP: H0")
     return(tab)
     } else {
     return() 
     }
-  }, align = "l", caption = "Median N if H1 is true", caption.placement = "top", digits = 0)
-  
-  output$mediantable.0 <- renderTable({
-    if(is.element("medians", input$stats)){
-      tab <- select(tabdata.0(), starts_with("median"), boundary2.H0) %>% filter(boundary2.H0 == input$bound) %>% select(-boundary2.H0)
-      colnames(tab) <- input$method
-      return(tab)
-    } else {
-      return() 
-    }
-  }, align = "l", caption = "Median N if H0 is true", caption.placement = "top", digits = 0)
+  }, align = "l", caption = "Median of the Distribution of N", caption.placement = "top", digits = 0, rownames = TRUE)
   
   output$quartilestable.informed <- renderTable({
     if(is.element("quartiles", input$stats) & is.element("Informed", input$method)){
@@ -689,11 +683,11 @@ server <- function(input, output) {
                      vioplot = input$vioplot,
                      bp = input$bp,
                      histogram = input$histogram,
-                     choicenames.hinges = choicenames.hinges(),
-                     choicenames.whisker = choicenames.whisker(),
+                     choicenames.Nquartiles = choicenames.Nquartiles(),
+                     choicenames.NCIs = choicenames.NCIs(),
                      choicevalues = choicevalues(),
-                     hinges = input$hinges,
-                     whiskers = input$whiskers,
+                     Nquartiles = input$Nquartiles,
+                     NCIs = input$NCIs,
                      efficiency = efficiency(),
                      defaultmedian = defaultmedian(),
                      informedmedian = informedmedian(),

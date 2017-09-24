@@ -15,11 +15,11 @@ params:
   vioplot: NA
   bp: NA
   histogram: NA
-  choicenames.hinges: NA
-  choicenames.whisker: NA
+  choicenames.Nquartiles: NA
+  choicenames.NCIs: NA
   choicevalues: NA
-  hinges: NA
-  whiskers: NA
+  Nquartiles: NA
+  NCIs: NA
   efficiency: NA
   defaultmedian: NA
   informedmedian: NA
@@ -58,8 +58,8 @@ efficiencyplot(params$efficiencylist[[params$efficiency]],
                params$true.ES,
                params$defaultmedian,
                params$informedmedian,
-               params$hinges,
-               params$whiskers
+               params$Nquartiles,
+               params$NCIs
                )
 ```
 
@@ -84,16 +84,14 @@ if (length(params$SummaryPlot) > 0 & is.element("Informed", params$method)){
 library(knitr)
 
 if(is.element("medians", params$stats)){
-      tab <- select(params$tabdata.0, starts_with("median"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0)
-      colnames(tab) <- params$method
-      return(kable(tab, caption = "Median N if H0 is true", digits = 0))
+  tab1 <- select(params$tabdata, starts_with("median"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2)
+      colnames(tab1) <- params$method    
+  tab0 <- select(params$tabdata.0, starts_with("median"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0)
+      colnames(tab0) <- params$method
+  tab <- rbind(tab1, tab0)
+  rownames(tab) <- c("DGP: H1", "DGP: H0")
+  return(kable(tab, caption = "Median of the Distribution of N", digits = 0))
 }
-if(is.element("medians", params$stats)){
-    tab <- select(params$tabdata, starts_with("median"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2)
-    colnames(tab) <- params$method
-    return(kable(tab, caption = "Median N if H1 is true", digits = 0, align = "l"))
-}
-
 
 # --------------------------------- Quantile Tables -------------------------------------------------------------------------------
 

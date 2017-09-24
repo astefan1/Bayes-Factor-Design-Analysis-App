@@ -6,30 +6,30 @@ methodselection <- function(method){
   
   if(length(method) == 2){
     
-    choicenames.hinges <- list("Do not display hinges", "Display for default prior", "Display for informed prior")
-    choicenames.whiskers <- list("Do not display whiskers", "Display for default prior", "Display for informed prior")
+    choicenames.Nquartiles <- list("Do not display 25%-75% quantile range", "Display for default prior", "Display for informed prior")
+    choicenames.NCIs <- list("Do not display 5%-95% quantile range", "Display for default prior", "Display for informed prior")
     choicevalues <- list("none", "default", "informed")
     
   } else if ("Default" %in% method){
     
-    choicenames.hinges <- list("Do not display hinges", "Display hinges for default prior")
-    choicenames.whiskers <- list("Do not display whiskers", "Display for default prior")
+    choicenames.Nquartiles <- list("Do not display 25%-75% quantile range", "Display for default prior")
+    choicenames.NCIs <- list("Do not display 5%-95% quantile range", "Display for default prior")
     choicevalues <- list("none", "default")
     
   } else if ("Informed" %in% method){
     
-    choicenames.hinges <- list("Do not display hinges", "Display hinges for informed prior")
-    choicenames.whiskers <- list("Do not display whiskers", "Display for informed prior")
+    choicenames.Nquartiles <- list("Do not display 25%-75% quantile range", "Displays for informed prior")
+    choicenames.NCIs <- list("Do not display 5%-95% quantile range", "Display for informed prior")
     choicevalues <- list("none", "informed")
     
   } else if (is.na(method)){
     
-    choicenames.hinges <- list("Do not display hinges")
-    choicenames.whiskers <- list("Do not display whiskers")
+    choicenames.Nquartiles <- list("Do not display 25%-75% quantile range")
+    choicenames.NCIs <- list("Do not display 5%-95% quantile range")
     choicevalues <- list("none")
   }
   
-  choices <- list(choicenames.hinges, choicenames.whiskers, choicevalues)
+  choices <- list(choicenames.Nquartiles, choicenames.NCIs, choicevalues)
   return(choices)
 }
 

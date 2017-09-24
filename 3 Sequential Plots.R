@@ -14,7 +14,7 @@
 #' @param whiskers for which method should upper/lower whiskers be drawn ("none", "default", "informed")
 
 
-efficiencyplot <- function(efficiency, true.ES, median.default = TRUE, median.informed = FALSE, hinges = c("default", "informed", "none"), whiskers = c("default", "informed", "none")){
+efficiencyplot <- function(efficiency, true.ES, median.default = TRUE, median.informed = FALSE, Nquartiles = c("default", "informed", "none"), NCIs = c("default", "informed", "none")){
   
   efficiency <- as.data.frame(efficiency)
   
@@ -39,16 +39,16 @@ efficiencyplot <- function(efficiency, true.ES, median.default = TRUE, median.in
       font.lab = 2, cex.axis = 1.3, bty = "n", las = 1)
   
   # Define maximum of y axis
-  if (hinges == "none" & whiskers == "none" & nopriorselected == FALSE){
+  if (Nquartiles == "none" & NCIs == "none" & nopriorselected == FALSE){
     ymax <- 1.06 * max(max(efficiency$median.default), max(efficiency$median.informed))
-  } else if ((whiskers == hinges & hinges == "default") | (whiskers == "none" & hinges == "default") | (whiskers == "default" & hinges == "none")){
-    ymax <- max(efficiency$upwhisk.default)
-  } else if ((whiskers == "default" & hinges == "informed") | (whiskers == "informed" & hinges == "default")){
-    ymax <- max(max(efficiency$upwhisk.default), max(efficiency$upwhisk.informed))
+  } else if ((NCIs == Nquartiles & Nquartiles == "default") | (NCIs == "none" & Nquartiles == "default") | (NCIs == "default" & Nquartiles == "none")){
+    ymax <- max(efficiency$`quant.95%.default`)
+  } else if ((NCIs == "default" & Nquartiles == "informed") | (NCIs == "informed" & Nquartiles == "default")){
+    ymax <- max(max(efficiency$`quant.95%.default`), max(efficiency$`quant.95%.informed`))
   } else {
-    ymax <- max(efficiency$upwhisk.informed)
+    ymax <- max(efficiency$`quant.95%.informed`)
   }
-  
+
   # Define scale of y axis
   ylim <- c(10, ymax)
   yticks <- pretty(ylim, n = 7)
@@ -108,25 +108,25 @@ efficiencyplot <- function(efficiency, true.ES, median.default = TRUE, median.in
   mtext("Median N per Group", 2, line = 4, cex = 1.5, font = 2, las = 0)
   title(main = paste0("Expected N per group (Data Generating Process: ES = ", true.ES, ")"))
   
-  # Draw hinges (if selected)
-  if (hinges == "default" & nopriorselected == FALSE){
+  # Draw quartiles (if selected)
+  if (Nquartiles == "default" & nopriorselected == FALSE){
     polygon(x = c(efficiency$boundary2, rev(efficiency$boundary2)),
-            y = c(efficiency$lowhinge.default, rev(efficiency$uphinge.default)),
+            y = c(efficiency$`quant.25%.default`, rev(efficiency$`quant.75%.default`)),
             col = alpha("grey", 0.5), border = NA)
-  } else if (hinges == "informed" & nopriorselected == FALSE){
+  } else if (Nquartiles == "informed" & nopriorselected == FALSE){
     polygon(x = c(efficiency$boundary2, rev(efficiency$boundary2)),
-            y = c(efficiency$lowhinge.informed, rev(efficiency$uphinge.informed)),
+            y = c(efficiency$`quant.25%.informed`, rev(efficiency$`quant.75%.informed`)),
             col = alpha("grey", 0.5), border = NA)
   } 
   
   # Draw whiskers (if selected)
-  if (whiskers == "default" & nopriorselected == FALSE){
+  if (NCIs == "default" & nopriorselected == FALSE){
     polygon(x = c(efficiency$boundary2, rev(efficiency$boundary2)),
-            y = c(efficiency$lowwhisk.default, rev(efficiency$upwhisk.default)),
+            y = c(efficiency$`quant.5%.default`, rev(efficiency$`quant.95%.default`)),
             col = alpha("grey", 0.3), border = NA)
-  } else if (whiskers == "informed" & nopriorselected == FALSE){
+  } else if (NCIs == "informed" & nopriorselected == FALSE){
     polygon(x = c(efficiency$boundary2, rev(efficiency$boundary2)),
-            y = c(efficiency$lowwhisk.informed, rev(efficiency$upwhisk.informed)),
+            y = c(efficiency$`quant.5%.informed`, rev(efficiency$`quant.95%.informed`)),
             col = alpha("grey", 0.3), border = NA)
   }
   
