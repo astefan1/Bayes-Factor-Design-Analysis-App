@@ -95,87 +95,29 @@ if(is.element("medians", params$stats)){
 }
 
 
-# ---------------------------------------- Hinges Tables ------------------------------------------------------------------------
-
-
-if(is.element("hinges", params$stats)){
-      tab <- select(params$tabdata.0, starts_with("lowhinge"), starts_with("uphinge"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0)
-      if(ncol(tab) == 4){
-        colnames(tab) <- c("Lower Hinge Default", "Lower Hinge Informed", "Upper Hinge Default", "Upper Hinge Informed")
-      } else if (is.element("lowhinge.default", colnames(tab))){
-        colnames(tab) <- c("Lower Hinge Default", "Upper Hinge Default")
-      } else {
-        colnames(tab) <- c("Lower Hinge Informed", "Upper Hinge Informed")
-      }
-      return(kable(tab, caption = "Hinges of N if H0 is true", digits = 0, align = "l"))
-}
-
-if(is.element("hinges", params$stats)){
-      tab <- select(params$tabdata, starts_with("lowhinge"), starts_with("uphinge"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2)
-      if(ncol(tab) == 4){
-        colnames(tab) <- c("Lower Hinge Default", "Lower Hinge Informed", "Upper Hinge Default", "Upper Hinge Informed")
-      } else if (is.element("lowhinge.default", colnames(tab))){
-        colnames(tab) <- c("Lower Hinge Default", "Upper Hinge Default")
-      } else {
-        colnames(tab) <- c("Lower Hinge Informed", "Upper Hinge Informed")
-      }
-      return(kable(tab, caption = "Hinges of N if H1 is true", digits = 0, align = "l"))
-}
-
-# ----------------------------------------------- Whiskers Table ------------------------------------------------------------------
-
-if(is.element("whiskers", params$stats)){
-      tab <- select(params$tabdata.0, starts_with("lowwhisk"), starts_with("upwhisk"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0)
-      if(ncol(tab) == 4){
-        colnames(tab) <- c("Lower Whisker Default", "Lower Whisker Informed", "Upper Whisker Default", "Upper Whisker Informed")
-      } else if (is.element("lowhinge.default", colnames(tab))){
-        colnames(tab) <- c("Lower Whisker Default", "Upper Whisker Default")
-      } else {
-        colnames(tab) <- c("Lower Whisker Informed", "Upper Whisker Informed")
-      }
-      return(kable(tab, caption = "Whiskers of N if H0 is true", digits = 0, align = "l"))
-}
-
-if(is.element("whiskers", params$stats)){
-      tab <- select(params$tabdata, starts_with("lowwhisk"), starts_with("upwhisk"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2)
-      if(ncol(tab) == 4){
-        colnames(tab) <- c("Lower Whisker Default", "Lower Whisker Informed", "Upper Whisker Default", "Upper Whisker Informed")
-      } else if (is.element("lowhinge.default", colnames(tab))){
-        colnames(tab) <- c("Lower Whisker Default", "Upper Whisker Default")
-      } else {
-        colnames(tab) <- c("Lower Whisker Informed", "Upper Whisker Informed")
-      }
-      return(kable(tab, caption = "Whiskers of N if H1 is true", digits = 0, align = "l"))
-}
-
-
 # --------------------------------- Quantile Tables -------------------------------------------------------------------------------
 
-
-if(is.element("quartiles", params$stats) & is.element("Default", params$method)){
-      tab.default <- select(params$tabdata.0, starts_with("quant"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0) %>% select(ends_with("default.H0"))
-      if(ncol(tab.default) > 0){colnames(tab.default) <- c("5%", "25%", "75%", "95%")}
-      return(kable(tab.default, caption = "Relevant Quantiles of the Distribution of N (DGP: H0, Default Prior on Effect Size)", digits = 0, align = "l"))
-}
-
 if(is.element("quartiles", params$stats) & is.element("Informed", params$method)){
-      tab.informed <- select(params$tabdata.0, starts_with("quant"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0) %>% select(ends_with("informed.H0"))
-      if(ncol(tab.informed) > 0){colnames(tab.informed) <- c("5%", "25%", "75%", "95%")}
-      return(kable(tab.informed, caption = "Relevant Quantiles of the Distribution of N (DGP: H0, Informed Prior on Effect Size)", digits = 0, align = "l"))
-}
+      tab.informed.1 <- select(params$tabdata, starts_with("quant"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2) %>% select(ends_with("informed"))
+      if(ncol(tab.informed.1) > 0){colnames(tab.informed.1) <- c("5%", "20%", "25%", "75%", "80%", "95%")}
+      tab.informed.0 <- select(params$tabdata.0, starts_with("quant"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0) %>% select(ends_with("informed.H0"))
+      if(ncol(tab.informed.0) > 0){colnames(tab.informed.0) <- c("5%", "20%", "25%", "75%", "80%", "95%")}
+      tab.informed <- rbind(tab.informed.1, tab.informed.0)
+      rownames(tab.informed) <- c("DGP: H1", "DGP: H0")
 
-if(is.element("quartiles", params$stats) & is.element("Default", params$method)){
-      tab.default <- select(params$tabdata, starts_with("quant"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2) %>% select(ends_with("default"))
-      if(ncol(tab.default) > 0){colnames(tab.default) <- c("5%", "25%", "75%", "95%")}
+      return(kable(tab.informed, align = "l", caption = "Relevant Quantiles of the Distribution of N (Informed Prior on Effect Size)", caption.placement = "top", digits = 0))
+}
       
-      return(kable(tab.default, caption = "Relevant Quantiles of the Distribution of N (DGP: H1, Default Prior on Effect Size)", digits = 0, align = "l"))
-}
-
-if(is.element("quartiles", params$stats) & is.element("Informed", params$method)){
-      tab.informed <- select(params$tabdata, starts_with("quant"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2) %>% select(ends_with("informed"))
-      if(ncol(tab.informed) > 0){colnames(tab.informed) <- c("5%", "25%", "75%", "95%")}
-
-      return(kable(tab.informed, caption = "Relevant Quantiles of the Distribution of N (DGP: H1, Informed Prior on Effect Size)", digits = 0, align = "l"))
+  
+if(is.element("quartiles", params$stats) & is.element("Default", params$method)){
+      tab.default.1 <- select(params$tabdata, starts_with("quant"), boundary2) %>% filter(boundary2 == params$bound) %>% select(-boundary2) %>% select(ends_with("default"))
+      if(ncol(tab.default.1) > 0){colnames(tab.default.1) <- c("5%", "20%", "25%", "75%", "80%", "95%")}
+      tab.default.0 <- select(params$tabdata.0, starts_with("quant"), boundary2.H0) %>% filter(boundary2.H0 == params$bound) %>% select(-boundary2.H0) %>% select(ends_with("default.H0"))
+      if(ncol(tab.default.0) > 0){colnames(tab.default.0) <- c("5%", "20%", "25%", "75%", "80%", "95%")}
+      tab.default <- rbind(tab.default.1, tab.default.0)
+      rownames(tab.default) <- c("DGP: H1", "DGP: H0")
+      
+      return(kable(tab.default, align = "l", caption = "Relevant Quantiles of the Distribution of N (Default Prior on Effect Size)", caption.placement = "top", digits = 0))
 }
 
 # ------------------------------------------------- Error Rates ------------------------------------------------------------------
