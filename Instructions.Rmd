@@ -9,7 +9,7 @@ Well-designed experimental setups maximize efficiency and informativeness of the
 
 In a classical frequentist design, these goals are usually targeted with an a-priori power analysis by controlling long-term error rates and determining the minimum sample size for these error rates. However, this method cannot be applied to Bayesian analyses and falls short in measuring the actual evidential strength that can be expected from a design.
 
-The Bayes Factor Design Analysis (BFDA) was developed by [Schönbrodt and Wagenmakers](http://bit.ly/2uZ2R35) to tackle these shortfalls. It aims at answering the following two questions:
+The Bayes Factor Design Analysis (BFDA) was developed by <a href="https://link.springer.com/article/10.3758/s13423-017-1230-y"target="_blank">Schönbrodt and Wagenmakers (2017)</a> to tackle these shortfalls. It aims at answering the following two questions:
 
 1) Which evidence strength can I expect for a specific research design?
 2) Which long-term rates of misleading evidence can I expect for a specific research design?
@@ -22,36 +22,13 @@ This app is designed to facilitate a Bayes Factor Design Analysis for a simple, 
 
 ### BFDA with Informed and Default Priors
 
-Bayes factors are the ratio of two marginal likelihoods. You can imagine a marginal likelihood as a weighted sum of probability densities that you obtain for your data under the assumption of different population parameters. The weighting is determined by the prior distributions of parameters.
+Bayes factors are the ratio of two marginal likelihoods. You can imagine a marginal likelihood as a weighted sum of probability densities that you obtain for your data under the assumption of different population parameters. The weighting is determined by the prior distributions on parameters.
 
 How do you determine prior distributions? Ask yourself the following question: Which parameter values would I expect if the respective hypothesis is true <i> before </i> conducting the study? For the null hypothesis, there is not much discussion about this issue. Null hypothesis means null effect, so you assign all prior mass to zero (resulting in a point prior on zero).
 
-For the alternative hypothesis, matters become a little more difficult. There is an ongoing debate about how much information should be incorporated in this prior. So-called "objective" Bayesians prefer to incorporate as little information as possible in the prior, which results in the use of very broad prior distributions. A typical prior distribution objective Bayesians use for Bayesian t-tests is a zero-centered Cauchy distribution with a scale of $\sqrt{2}/2$. In contrast, so-called "subjective" Bayesians prefer to incorporate as much prior knowledge as possible in prior distributions. This can mean including knowledge from previous studies or knowledge about restricting conditions of the experimental setup ("I use a 5-point Likert scale therefore the maximum difference between two results cannot exceed 4"). For a more detailed account of the debate between objective and subjective Bayesians, see Dienes (2008).
+For the alternative hypothesis, matters become a little more difficult. There is an ongoing debate about how much information should be incorporated in this prior. So-called "objective" Bayesians prefer to incorporate as little information as possible in the prior, which results in the use of very broad prior distributions <a href="https://projecteuclid.org/euclid.ba/1340371035" target="_blank"> (Berger, 2006) </a>. A typical prior distribution objective Bayesians use for Bayesian t-tests is a zero-centered Cauchy distribution with a scale of $\sqrt{2}/2$. In contrast, so-called "subjective" Bayesians prefer to incorporate as much prior knowledge as possible in prior distributions <a href="https://projecteuclid.org/euclid.ba/1340371039" target="_blank"> (Fienberg, 2006) </a>. This can mean including knowledge from previous studies or knowledge about restricting conditions of the experimental setup ("I use a 5-point Likert scale therefore the maximum difference between two results cannot exceed 4"). For a more detailed account of the debate between objective and subjective Bayesians, see <a href="https://books.google.nl/books?id=qCQdBQAAQBAJ&lpg=PP1&dq=Understanding%20Psychology%20as%20a%20Science&hl=de&pg=PP1#v=onepage&q=Understanding%20Psychology%20as%20a%20Science&f=false" target="_blank"> Dienes (2008) </a>.
 
-In this app, users can choose between two different prior distributions. We will refer to them as the "default" prior and the "informed" prior. As suggested by the name, the "informed" prior follows the subjective Bayesian approach, while the "default" prior is a non-informative prior following the objective Bayesian approach. It is called "default", because it corresponds to the default settings in the influential <a href="https://cran.r-project.org/web/packages/BayesFactor/index.html" target="_blank"><i> BayesFactor </i> R-package.</a> The subjective prior used in this app is a generic subjective prior developed by <a href="https://arxiv.org/pdf/1704.02479.pdf" target="_blank">Gronau, Ly, and Wagenmakers (2017)</a> for the context of (social) psychology using a prior elicitation technique.
-
-### Conducting a Fixed-N Design BFDA
-
-The type of Bayes Factor Design Analysis resembling closest to the typical freqentist power analysis is a fixed-n design BFDA. Here, the sample size is determined before the experiment takes place. Questions you can ask in this kind of design analysis include:
-
-1) Given a specific sample size and an expected population effect size: What Bayes factors can I expect?
-2) What sample size do I need to have to obtain a certain evidence strength with a certain (minimum) probability?
-
-The part of this app covering the BFDA for the fixed-n design is built along these two questions. To answer the first question, it provides you with distributions of Bayes factors for sample sizes from 10 to 200 and true population effect sizes ranging from $\delta$ = 0.2 to $\delta$ = 1.2. You can either access the full distribution or certain characteristics of it (median, characteristic quantiles). You can also get information about the expected rates of false positive and false negative evidence for a certain sample size, (symmetric) boundary, and true population effect. To answer the second question, we provide you with a verbal output which gives you information about the minimum sample size you need per group to obtain a certain evidence strength with a certain probability. We define evidence strength (E) as a Bayes factor which is higher or equal than E or lower or equal than 1/E.
-
-### Conducting a Sequential Design BFDA
-
-In a Bayesian setup, it is possible to use designs with optional stopping without tampering the the rates of misleading evidence. These Bayesian designs are called "Sequential Designs" (<a href="http://bit.ly/2woOAdK" target="_blank">Schönbrodt, Wagenmakers, Zehetleitner, & Perugini, 2015</a>). The idea is to collect data until a certain upper or lower boundary of Bayes factors is reached. Questions you can ask in a design analysis for this kind of design include:
-
-1) What sample sizes can I expect given a desired level of evidence and the expected effect size?
-2) What is the probability of misleading evidence for certain boundaries?
-
-We answer both questions in the Sequential Design part of the app. First, we give a graphical summary of the sample size distributions for symmetric boundaries from 3 to 30 (equivalent to lower boundaries from 1/3 to 1/30 and upper boundaries from 3 to 30). Like in a boxplot, we use medians as a statistic for the central tendency of the distribution, and the user can choose to fade-in hinges and whiskers of the distribution. When users have gained a broad understanding of the relation between sample size and choice of boundary, they can proceed with the detailed analyses in the bottom part of the tab. Here, they can access the exact values of distinct features of the distribution (median, characteristic quantiles, hinges, whiskers) as well as another graphic overview of the design features.
-
-Also the second question of the BFDA sequential designs is answered in this panel. Users can access information on the expected rates of misleading evidence for boundaries ranging from 3 to 30.
-
-### Details of the App
-The app facilitates a BFDA for an independent-group t-test with directional hypotheses. It relies on the results of Monte Carlo simulations with 10,000 iterations. We computed Bayes factors based on a t-statistic. The t-statistic was obtained using the t.test function from the <i>stats</i> package in R. The default Bayes factor was computed using the ttest.tstat function of the R <i>BayesFactor</i> package. The null interval was set to [0;Inf] and the r scale to "medium". The informed Bayes factors were computed using the functions created by <a href="https://arxiv.org/pdf/1704.02479.pdf" target="_blank">Gronau, Ly, and Wagenmakers (2017)</a>. The informed prior was set to a t-distribution with a non-centrality parameter of 0.35, 3 degrees of freedom, and a scale parameter of 0.102.
+In this app, users can choose between two different prior distributions. We will refer to them as the "default" prior and the "informed" prior. As suggested by the name, the "informed" prior follows the subjective Bayesian approach, while the "default" prior is a non-informative prior following the objective Bayesian approach. It is called "default", because it corresponds to the default settings in the influential <a href="https://cran.r-project.org/web/packages/BayesFactor/index.html" target="_blank"><i> BayesFactor </i> R-package.</a> The subjective prior used in this app is an exemplary but in our opinion typical subjective prior developed by <a href="https://arxiv.org/pdf/1704.02479.pdf" target="_blank">Gronau, Ly, and Wagenmakers (2017)</a> for the context of (social) psychology using a prior elicitation technique.
 
 ```{r, echo=FALSE, fig.width = 10}
 
@@ -93,5 +70,32 @@ legend(x = 4, y = 3.5,
 
 ```
 
-### References
+### Conducting a Fixed-N Design BFDA
+
+The type of Bayes Factor Design Analysis resembling closest to the typical freqentist power analysis is a fixed-n design BFDA. Here, the sample size is determined before the experiment takes place. Questions you can ask in this kind of design analysis include:
+
+1) Given a specific sample size and an expected population effect size: What Bayes factors can I expect?
+2) What sample size do I need to have to obtain true positive or true negative evidence with a certain probability?
+
+The part of this app covering the BFDA for the fixed-n design is built along these two questions. To answer the first question, it provides you with distributions of Bayes factors for sample sizes from 10 to 200 and true population effect sizes ranging from $\delta$ = 0.2 to $\delta$ = 1.2. You can either access the full distribution or certain characteristics of it (median, characteristic quantiles). You can also get information about the expected rates of false positive and false negative evidence for a certain sample size, (symmetric) boundary, and true population effect. To answer the second question, we provide you with a verbal output which gives you information about the minimum sample size you need per group to obtain a certain evidence strength with a certain probability.
+
+### Conducting a Sequential Design BFDA
+
+In a Bayesian setup, it is possible to use designs with optional stopping without tampering the the rates of misleading evidence. These Bayesian designs are called "Sequential Designs" (<a href="http://bit.ly/2woOAdK" target="_blank">Schönbrodt, Wagenmakers, Zehetleitner, & Perugini, 2015</a>). The idea is to collect data until a certain upper or lower boundary of Bayes factors is reached. Questions you can ask in a design analysis for this kind of design include:
+
+1) What sample sizes can I expect given a desired level of evidence and the expected effect size?
+2) What is the probability of misleading evidence for certain boundaries?
+
+We answer both questions in the Sequential Design part of the app. First, we give a graphical summary of the sample size distributions for symmetric boundaries from 3 to 30 (equivalent to lower boundaries from 1/3 to 1/30 and upper boundaries from 3 to 30). Like in a boxplot, we use medians as a statistic for the central tendency of the distribution, and the user can choose to fade-in the 25%-75% and the 5%-95% quantiles of the distribution. When users have gained a broad understanding of the relation between sample size and choice of boundary, they can proceed with the detailed analyses in the bottom part of the tab. Here, they can access the exact values of distinct features of the distribution (median, characteristic quantiles) as well as graphic overviews of the design features (violinplots, boxplots, histograms).
+
+Also, the second question of the BFDA sequential designs is answered in this panel. Users can access information on the expected rates of misleading evidence for boundaries ranging from 3 to 30.
+
+### Details of the App
+The app facilitates a BFDA for an independent-group t-test with directional hypotheses. It relies on the results of Monte Carlo simulations with 10,000 iterations. We computed Bayes factors based on a t-statistic. The t-statistic was obtained using the t.test function from the <a href="https://stat.ethz.ch/R-manual/R-devel/library/stats/html/00Index.html" target="_blank"> <i>stats</i> package </a> in R. The default Bayes factor was computed using the ttest.tstat function of the <a href="https://cran.r-project.org/web/packages/BayesFactor/index.html" target="_blank"><i> BayesFactor </i> </a> R package. The null interval was set to [0;Inf] and the r scale to "medium". The informed Bayes factors were computed using the functions created by <a href="https://arxiv.org/pdf/1704.02479.pdf" target="_blank">Gronau, Ly, and Wagenmakers (2017)</a>. The informed prior was set to a t-distribution with a non-centrality parameter of 0.35, 3 degrees of freedom, and a scale parameter of 0.102.
+
+### Tutorial Paper
+For more information on the Bayes Factor Design Analysis, have a look at our tutorial paper.
+
+
+
 ...
