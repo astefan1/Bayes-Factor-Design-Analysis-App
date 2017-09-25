@@ -189,7 +189,7 @@ ui <- shinyUI(
                   uiOutput("quartilesreactive"),
                   uiOutput("cisreactive"),
                   htmlOutput("quartilescis"),
-                  HTML("<p><p><a href=efficiencyplot.explanation.jpeg/ target=_blank > Click here to see an explanation of the plot on the right</a></p>")
+                  HTML("<p><p><a href=efficiencyplot.explanation.jpeg target=_blank > Click here to see an explanation of the plot on the right</a></p>")
                   ),
            mainPanel(
                   plotOutput("efficiency")
