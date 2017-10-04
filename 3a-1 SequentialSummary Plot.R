@@ -131,7 +131,6 @@ summaryplot.sequentialBFDA <- function(SequentialBF.obsub, boundary = 10, method
   # positions for the category labels
   labels.y <- c(4, 2.86, 1.7, .55, -.55, -1.7, -2.85, -4)
   
-  windows.options(width = 10, height = 10)
   par(mai=c(5.7, 1, 1, 1), xpd=NA)
   plot(NA,
        xlim=c(xlim[1], xlim[2]),
