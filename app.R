@@ -61,7 +61,7 @@ ui <- shinyUI(
                                  h2("")),
                         fluidRow(column(4,
                                  sliderInput(inputId = "true.ES.fixed",
-                                             label = "If your hypothesis is true: Which effect size do you expect?",
+                                             label = HTML("If your hypothesis is true: Which effect size (&delta;) do you expect?"),
                                              value = 0.5,
                                              min = 0.2,
                                              max = 1.2,
@@ -136,7 +136,7 @@ ui <- shinyUI(
                                                                       step = 1,
                                                                       width = "500px"),
                                                           checkboxInput("samplesizeH0.fixed",
-                                                                        "Show Results Also For ES = 0 as Data Generating Process",
+                                                                        "Show Results Also H0 as Data Generating Process",
                                                                         FALSE,
                                                                         width = "500px")),
                                              mainPanel(id = "MainPanel",
@@ -174,7 +174,7 @@ ui <- shinyUI(
   fluidRow(sidebarLayout(sidebarPanel(id = "sidebar",
                                       width = 4,
                   sliderInput(inputId = "true.ES",
-                              label = "If your hypothesis is true: Which effect size do you expect?",
+                              label = HTML("If your hypothesis is true: Which effect size (&delta;) do you expect?"),
                               value = 0.5,
                               min = 0.2,
                               max = 1.2,
@@ -225,19 +225,19 @@ ui <- shinyUI(
                                      choiceValues = list("medians", "quartiles")),
                   checkboxGroupInput(inputId = "FPFN",
                                      label = "Rates of Misleading Evidence",
-                                     choiceNames = list("Under H0: False Positive Evidence", "Under H1: False Negative Evidence"),
+                                     choiceNames = list(HTML("For &delta; = 0 [H0 is Correct]"), HTML("For Your Selected &delta; [H1 is Correct]")),
                                      choiceValues = list("H0", "H1")),
                   checkboxGroupInput(inputId = "vioplot",
                                      label = "Violinplot of the Distribution of N",
-                                     choiceNames = list("For ES = 0 [H0 is Correct]", "For Your Selected ES [H1 is Correct]"),
+                                     choiceNames = list(HTML("For &delta; = 0 [H0 is Correct]"), HTML("For Your Selected &delta; [H1 is Correct]")),
                                      choiceValues = list("H0", "H1")),
                   checkboxGroupInput(inputId = "bp",
                                      label = "Boxplot of the Distribution of N",
-                                     choiceNames = list("For ES = 0 [H0 is Correct]", "For Your Selected ES [H1 is Correct]"),
+                                     choiceNames = list(HTML("For &delta; = 0 [H0 is Correct]"), HTML("For Your Selected &delta; [H1 is Correct]")),
                                      choiceValues = list("H0", "H1")),
                   checkboxGroupInput(inputId = "histogram",
                                      label = "Histograms of the Distribution of N",
-                                     choiceNames = list("For ES = 0 [H0 is Correct]", "For Your Selected ES [H1 is Correct]"),
+                                     choiceNames = list(HTML("For &delta; = 0 [H0 is Correct]"), HTML("For Your Selected &delta; [H1 is Correct]")),
                                      choiceValues = list("H0", "H1"))
                   ),
            column(8,
@@ -352,7 +352,7 @@ server <- function(input, output) {
     
     BF.quantiles.1.table.def <- e[["analysis.expBF.list"]][[analysis.expBF()]]$df.default %>% filter(n == input$samplesize.fixed) %>% select(quant.05, quant.25, quant.75, quant.95) %>% exp(.)
     BF.quantiles.0.table.def <- e[["analysis.expBF.list"]][["analysis.expBF.0"]]$df.default %>% filter(n == input$samplesize.fixed) %>% select(quant.05, quant.25, quant.75, quant.95) %>% exp(.)
-    BF.quantiles.table.def <- cbind(c(paste0("H1: ES = ", input$true.ES.fixed), "H0: ES = 0"),rbind(BF.quantiles.1.table.def, BF.quantiles.0.table.def))
+    BF.quantiles.table.def <- cbind(c("H1", "H0"),rbind(BF.quantiles.1.table.def, BF.quantiles.0.table.def))
     colnames(BF.quantiles.table.def) <- c("DGP", "5%", "25%", "75%", "95%")
     
     if("Default" %in% input$method.fixed){
@@ -370,7 +370,7 @@ server <- function(input, output) {
     
     BF.quantiles.1.table.inf <- e[["analysis.expBF.list"]][[analysis.expBF()]]$df.informed %>% filter(n == input$samplesize.fixed) %>% select(quant.05, quant.25, quant.75, quant.95) %>% exp(.)
     BF.quantiles.0.table.inf <- e[["analysis.expBF.list"]][["analysis.expBF.0"]]$df.informed %>% filter(n == input$samplesize.fixed) %>% select(quant.05, quant.25, quant.75, quant.95) %>% exp(.)
-    BF.quantiles.table.inf <- cbind(c(paste0("H1: ES = ", input$true.ES.fixed), "H0: ES = 0"),rbind(BF.quantiles.1.table.inf, BF.quantiles.0.table.inf))
+    BF.quantiles.table.inf <- cbind(c("H1", "H0"),rbind(BF.quantiles.1.table.inf, BF.quantiles.0.table.inf))
     colnames(BF.quantiles.table.inf) <- c("DGP", "5%", "25%", "75%", "95%")
     
     if("Informed" %in% input$method.fixed){
@@ -390,8 +390,8 @@ server <- function(input, output) {
       type2error.table <- FPFN.fixed(e[["fixed.simresults"]][[res()]], input$method.fixed, input$decisionboundary.fixed, input$samplesize.fixed, 2)
       errors <- rbind(type1error.table, type2error.table)
       rownames(errors) <- c("False Positive Evidence Rates", "False Negative Evidence Rates")
-      if(ncol(errors) == 1 & "Default" %in% input$method.fixed){colnames(errors) <- "Default Prior on ES"}
-      if(ncol(errors) == 1 & "Informed" %in% input$method.fixed){colnames(errors) <- "Informed Prior on ES"}
+      if(ncol(errors) == 1 & "Default" %in% input$method.fixed){colnames(errors) <- "Default Prior on Effect Size"}
+      if(ncol(errors) == 1 & "Informed" %in% input$method.fixed){colnames(errors) <- "Informed Prior on Effect Size"}
     
     if("errorrates.fixedn" %in% input$choiceBFdetails.fixed & length(input$method.fixed) != 0){  
       return(errors)  

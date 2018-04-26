@@ -6,7 +6,7 @@
 
 #' @import dplyr
 
-#' @param expBF An expBF object (result of analysis.expBF)
+#' @param sim.tomaxn An element of fixed.simresults
 #' @param samplesize Fixed n at which BF distribution is evaluated
 #' @param method Method(s) to compute Bayes Factors ("default", "informed"), combine as vector to plot both methods
 #' @param boundary Critical BF boundaries for H0 and H1
@@ -47,9 +47,9 @@ plot.exp.BF.dist <- function(sim.tomaxn, samplesize, true.ES, method = "default"
   # main title
   
   if (method == "default") {
-    main <- paste0("Distribution of Default Bayes Factors (DGP: ES = ", true.ES, ")")
+    main <- bquote(paste("Distribution of Default Bayes Factors (DGP: ", delta*" = ", .(true.ES), ")"))
   } else {
-    main <- paste0("Distribution of Informed Bayes Factors (DGP: ES = ", true.ES, ")")
+    main <- bquote(paste("Distribution of Informed Bayes Factors (DGP: ", delta*" = ", .(true.ES), ")"))
   }
   
   # Automatic labeling of x axis

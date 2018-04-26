@@ -106,7 +106,7 @@ efficiencyplot <- function(efficiency, true.ES, median.default = TRUE, median.in
   # Axis labeling
   mtext("Boundary", 1, line = 2.5, cex = 1.5, font = 2)
   mtext("Median N per Group", 2, line = 4, cex = 1.5, font = 2, las = 0)
-  title(main = paste0("Expected N per group (Data Generating Process: ES = ", true.ES, ")"))
+  title(main = bquote(paste("Expected N per group (Data Generating Process: ", delta*" = ", .(true.ES), ")")))
   
   # Draw quartiles (if selected)
   if (Nquartiles == "default" & nopriorselected == FALSE){
@@ -147,7 +147,7 @@ cleanhist <- function(x, true.ES){
       font.lab = 2, cex.axis = 1.3, bty = "n", las=1)
   
   hist(x,
-       main = paste0("Distribution of N (DGP: ES = ", true.ES, ")"),
+       main = bquote(paste("Distribution of N (DGP: ", delta*" = ", .(true.ES), ")")),
        xlab = "",
        ylab = "",
        col = "grey",
@@ -256,7 +256,7 @@ plot.FNrate <- function(efficiency, true.ES, default = TRUE, informed = TRUE){
   # Axis labeling
   mtext("Boundary", 1, line = 2.5, cex = 1.5, font = 2)
   mtext("FN Evidence in %", 2, line = 3.8, cex = 1.5, font = 2, las = 0)
-  title(main = paste0("False Negative Evidence for ES = ", true.ES))
+  title(main = bquote(paste("False Negative Evidence for ", delta*" = ", .(true.ES))))
   
   if (default == TRUE & informed == TRUE){
     legend("topright", legend = c("Default", "Informed"), lty = c("solid", "dotted"), bty = "n")
@@ -394,9 +394,9 @@ cleanviolinplot <- function(ndistslist, true.ES, bound, default = TRUE, informed
   
   yticks <- pretty(log(violinplotdata$dat.long))
   if (H1 == FALSE){
-    plottitle <- "Distribution of N if H0 is true (DGP: ES = 0)"
+    plottitle <- bquote(paste("Distribution of N if H0 is true (DGP:", delta*" = 0)"))
   } else {
-    plottitle <- paste0("Distribution of N (DGP for H1: ES = ", true.ES, ")")
+    plottitle <- bquote(paste("Distribution of N (DGP for H1: ", delta*" = ", .(true.ES), ")"))
   }
   
   
@@ -477,9 +477,9 @@ cleanboxplot <- function(ndistslist, true.ES, bound, default = TRUE, informed = 
     yticks <- pretty(log(bpdata$dat.long))
     
     if (H1 == FALSE){
-      plottitle <- "Distribution of N if H0 is true (DGP: ES = 0)"
+      plottitle <- bquote(paste("Distribution of N if H0 is true (DGP: ", delta*" = 0)"))
     } else {
-      plottitle <- paste0("Distribution of N (DGP for H1: ES = ", true.ES, ")")
+      plottitle <- bquote(paste("Distribution of N (DGP for H1: ", delta*" = ", .(true.ES), ")"))
     }
     
     

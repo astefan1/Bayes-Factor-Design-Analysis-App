@@ -34,7 +34,7 @@ FPFN.fixed <- function(sim.tomaxn, method, boundary, samplesize, errortype){
   # Summarize results
   conc.evidence <- rbind(upper.hit, lower.hit)
   rownames(conc.evidence) <- c("False Positive Evidence", "False Negative Evidence")
-  colnames(conc.evidence) <- c("Default Prior on ES", "Informed Prior on ES")
+  colnames(conc.evidence) <- c("Default Prior on Effect Size", "Informed Prior on Effect Size")
   
 
   # Show only relevant results (depending on selected method and errortype)
