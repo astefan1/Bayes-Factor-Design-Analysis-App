@@ -138,7 +138,9 @@ ui <- shinyUI(
                                                           checkboxInput("samplesizeH0.fixed",
                                                                         "Show Results Also H0 as Data Generating Process",
                                                                         FALSE,
-                                                                        width = "500px")),
+                                                                        width = "500px"),
+                                                          HTML("<p><p><a href=Step2Explanation.html target=_blank > Click here to see an explanation</a></p>")
+                      ),
                                              mainPanel(id = "MainPanel",
                                                        width = 8,
                                                        htmlOutput("samplesizeH1.default.text"),
@@ -323,12 +325,13 @@ server <- function(input, output) {
     medBF.1.table.default <- e[["analysis.expBF.list"]][[analysis.expBF()]]$df.default %>% filter(n == input$samplesize.fixed) %>% select(quant.50) %>% exp(.)
     medBF.0.table.default <- e[["analysis.expBF.list"]][["analysis.expBF.0"]]$df.default %>% filter(n == input$samplesize.fixed) %>% select(quant.50) %>% exp(.)
     medBF.table.default <- cbind(medBF.1.table.default, medBF.0.table.default)
-    colnames(medBF.table.default) <- c("Median Bayes Factor (Default)", "Median Bayes Factor (Default, H0)")
+    
+    colnames(medBF.table.default) <- c("Median Bayes Factor (Default, H1: &delta; = as defined)", "Median Bayes Factor (Default, H0)")
     
     if("Default" %in% input$method.fixed){
       return(medBF.table.default)
     }}
-  })
+  }, sanitize.text.function = function(x) x)
   
   output$medBF.table.informed <- renderTable({
     
@@ -336,13 +339,13 @@ server <- function(input, output) {
     medBF.1.table.informed <- e[["analysis.expBF.list"]][[analysis.expBF()]]$df.informed %>% filter(n == input$samplesize.fixed) %>% select(quant.50) %>% exp(.)
     medBF.0.table.informed <- e[["analysis.expBF.list"]][["analysis.expBF.0"]]$df.informed %>% filter(n == input$samplesize.fixed) %>% select(quant.50) %>% exp(.)
     medBF.table.informed <- cbind(medBF.1.table.informed, medBF.0.table.informed)
-    colnames(medBF.table.informed) <- c("Median Bayes Factor (Informed)", "Median Bayes Factor (Informed, H0)")
+    colnames(medBF.table.informed) <- c("Median Bayes Factor (Informed, H1: &delta; = as defined)", "Median Bayes Factor (Informed, H0)")
     
     if("Informed" %in% input$method.fixed){
       return(medBF.table.informed)
     }} 
     
-  })
+  }, sanitize.text.function = function(x) x)
   
   # Create Table of Bayes Factor quantiles
   
