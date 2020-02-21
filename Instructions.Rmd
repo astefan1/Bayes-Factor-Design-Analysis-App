@@ -9,7 +9,7 @@ Well-designed experimental setups maximize efficiency and informativeness of the
 
 In a classical frequentist design, these goals are usually targeted with an a-priori power analysis by controlling long-term error rates and determining the minimum sample size for these error rates. However, this method cannot be applied to Bayesian analyses and falls short in measuring the actual evidential strength that can be expected from a design.
 
-The Bayes Factor Design Analysis (BFDA) was developed by <a href="https://link.springer.com/article/10.3758/s13423-017-1230-y"target="_blank">Schönbrodt and Wagenmakers (2017)</a> to tackle these shortfalls. It aims at answering the following two questions:
+The Bayes Factor Design Analysis (BFDA) was developed by <a href="https://link.springer.com/article/10.3758/s13423-017-1230-y"target="_blank">SchÃ¶nbrodt and Wagenmakers (2017)</a> to tackle these shortfalls. It aims at answering the following two questions:
 
 1) Which evidence strength can I expect for a specific research design?
 2) Which long-term rates of misleading evidence can I expect for a specific research design?
@@ -65,7 +65,7 @@ title("Prior Distributions on Effect Size")
 legend(x = 4, y = 3.5,
        legend = c(expression("t-Distribution (" * mu * "= 0.35, df = 3, r = 0.102) "),
                   expression("Cauchy-Distribution (" * mu * "= 0, r = " * sqrt(2) * "/ 2)")),
-       xjust = 1, yjust = 1, lty = c("solid", "dotted"), bty = "n",
+       xjust = 1, yjust = 1, lty = c("dotted", "solid"), bty = "n",
        pt.cex = 3, cex = 1.2)
 
 ```
@@ -81,7 +81,7 @@ The part of this app covering the BFDA for the fixed-n design is built along the
 
 ### Conducting a Sequential Design BFDA
 
-In a Bayesian setup, it is possible to use designs with optional stopping without tampering the the rates of misleading evidence. These Bayesian designs are called "Sequential Designs" (<a href="http://bit.ly/2woOAdK" target="_blank">Schönbrodt, Wagenmakers, Zehetleitner, & Perugini, 2015</a>). The idea is to collect data until a certain upper or lower boundary of Bayes factors is reached. Questions you can ask in a design analysis for this kind of design include:
+In a Bayesian setup, it is possible to use designs with optional stopping without tampering the the rates of misleading evidence. These Bayesian designs are called "Sequential Designs" (<a href="http://bit.ly/2woOAdK" target="_blank">Sch?nbrodt, Wagenmakers, Zehetleitner, & Perugini, 2015</a>). The idea is to collect data until a certain upper or lower boundary of Bayes factors is reached. Questions you can ask in a design analysis for this kind of design include:
 
 1) What sample sizes can I expect given a desired level of evidence and the expected effect size?
 2) What is the probability of misleading evidence for certain boundaries?
@@ -94,8 +94,10 @@ Also, the second question of the BFDA sequential designs is answered in this pan
 The app facilitates a BFDA for an independent-group t-test with directional hypotheses. It relies on the results of Monte Carlo simulations with 10,000 iterations. We computed Bayes factors based on a t-statistic. The t-statistic was obtained using the t.test function from the <a href="https://stat.ethz.ch/R-manual/R-devel/library/stats/html/00Index.html" target="_blank"> <i>stats</i> package </a> in R. The default Bayes factor was computed using the ttest.tstat function of the <a href="https://cran.r-project.org/web/packages/BayesFactor/index.html" target="_blank"><i> BayesFactor </i> </a> R package. The null interval was set to [0;Inf] and the r scale to "medium". The informed Bayes factors were computed using the functions created by <a href="https://arxiv.org/pdf/1704.02479.pdf" target="_blank">Gronau, Ly, and Wagenmakers (2017)</a>. The informed prior was set to a t-distribution with a non-centrality parameter of 0.35, 3 degrees of freedom, and a scale parameter of 0.102.
 
 ### Tutorial Paper
-For more information on the Bayes Factor Design Analysis, have a look at our <a href="https://psyarxiv.com/aqr79/" target="_blank"> tutorial paper<a>.
+For more information on the Bayes Factor Design Analysis, have a look at our <a href="https://psyarxiv.com/aqr79/" target="_blank"> tutorial paper</a>.
+
+### BFDA R-Package
+If the functionality of the BFDA-app does not fit your needs, take a look at our *BFDA* R-package. You can download it from GitHub on https://github.com/nicebread/BFDA.
 
 
-
-...
+.
